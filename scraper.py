@@ -8,6 +8,11 @@ class VnExpressSpider(scrapy.Spider):
     name = 'vnex-spider'
     start_urls = ['https://vnexpress.net/kinh-doanh']
 
+    custom_settings = {
+        'DOWNLOAD_DELAY': 5,
+        'CONCURRENT_REQUESTS': 3,
+    }
+
     def parse(self, response):
 
         CATEGORY_SELECTOR = '.ul-nav-folder li a::attr(href)'
