@@ -5,3 +5,8 @@ DB_CONFIG = {
     'host': 'localhost',
     'port': '5432',
 }
+
+CRAWL_SETTINGS = {
+    # 'DOWNLOAD_DELAY': 3,
+    # 'CONCURRENT_REQUESTS': 4,
+}
