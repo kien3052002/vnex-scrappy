@@ -14,7 +14,7 @@ class Database:
                    id TEXT PRIMARY KEY,
                    source TEXT,
                    title TEXT,
-                   category TEXT,
+                   category_id TEXT REFERENCES category(id) ON DELETE SET NULL,
                    author TEXT,
                    publish_date TEXT,
                    last_mod TEXT,
@@ -25,11 +25,11 @@ class Database:
         create_query_category = """
                 CREATE TABLE IF NOT EXISTS category (
                    id TEXT PRIMARY KEY,
-                   title TEXT,
+                   title TEXT
                 );
                 """
-        cursor.execute(create_query_news)
         cursor.execute(create_query_category)
+        cursor.execute(create_query_news)
         connection.commit()
         cursor.close()
         connection.close()
@@ -56,11 +56,11 @@ class Database:
         cursor = connection.cursor()
 
         insert_query = """
-                        INSERT INTO news (id, source, title, category, author, publish_date, last_mod, description, content)
+                        INSERT INTO news (id, source, title, category_id, author, publish_date, last_mod, description, content)
                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) ON CONFLICT (id) DO UPDATE SET 
                         source = EXCLUDED.source,
                         title = EXCLUDED.title,
-                        category = EXCLUDED.category,
+                        category_id = EXCLUDED.category_id,
                         author = EXCLUDED.author,
                         publish_date = EXCLUDED.publish_date,
                         last_mod = EXCLUDED.last_mod,
@@ -71,7 +71,7 @@ class Database:
             news_item['id'],
             news_item['source'],
             news_item['title'],
-            news_item['category'],
+            news_item['category_id'],
             news_item['author'],
             news_item['publish_date'],
             news_item['last_mod'],
