@@ -1,14 +1,15 @@
 from scrapy.utils.project import get_project_settings
 
 import psycopg2
+from db_config import DB_CONFIG
 
 
 class Database:
 
     def __init__(self):
-        con = self.db_connection()
-        cursor = con.cursor()
-        create_query = """
+        connection = psycopg2.connect(**DB_CONFIG)
+        cursor = connection.cursor()
+        create_query_news = """
                 CREATE TABLE IF NOT EXISTS news (
                    id TEXT PRIMARY KEY,
                    source TEXT,
@@ -21,25 +22,38 @@ class Database:
                    content TEXT
                 );
                 """
-        cursor.execute(create_query)
-        con.commit()
+        create_query_category = """
+                CREATE TABLE IF NOT EXISTS category (
+                   id TEXT PRIMARY KEY,
+                   title TEXT,
+                );
+                """
+        cursor.execute(create_query_news)
+        cursor.execute(create_query_category)
+        connection.commit()
         cursor.close()
-        con.close()
+        connection.close()
 
-    def db_connection(self):
-        connection = psycopg2.connect(
-            database='vnexpress',
-            user='postgres',
-            password='30052002',
-            host='localhost',
-            port='5432',
+    def insert_category(self, category_item):
+        connection = psycopg2.connect(**DB_CONFIG)
+        cursor = connection.cursor()
+        insert_query = """INSERT INTO category (id, title) VALUES(%s, %s) ON CONFLICT (id) DO UPDATE SET 
+                        title = EXCLUDED.title;"""
+        data = (
+            category_item['id'],
+            category_item['title'],
         )
-        return connection
+
+        cursor.execute(insert_query, data)
+        connection.commit()
+
+        cursor.close()
+        connection.close()
 
     def insert_news(self, news_item):
         # connection = psycopg2.connect(get_project_settings().get('CONNECTION_STRING'))
-        con = self.db_connection()
-        cursor = con.cursor()
+        connection = psycopg2.connect(**DB_CONFIG)
+        cursor = connection.cursor()
 
         insert_query = """
                         INSERT INTO news (id, source, title, category, author, publish_date, last_mod, description, content)
@@ -66,7 +80,7 @@ class Database:
         )
 
         cursor.execute(insert_query, data)
-        con.commit()
+        connection.commit()
 
         cursor.close()
-        con.close()
+        connection.close()

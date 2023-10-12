@@ -1,5 +1,5 @@
-
 from scrapy.item import Item, Field
+
 
 class NewsItem(Item):
     id = Field()
@@ -12,3 +12,7 @@ class NewsItem(Item):
     description = Field()
     content = Field()
 
+
+class CategoryItem(Item):
+    id = Field()
+    title = Field()
