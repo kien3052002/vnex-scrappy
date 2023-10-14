@@ -11,6 +11,7 @@ class NewsItem(Item):
     last_mod = Field()
     description = Field()
     content = Field()
+    content_text = Field()
     keywords = Field()
 
 

@@ -38,9 +38,9 @@ class VnExpressNewsSpider(scrapy.Spider):
                 yield response.follow(link, self.parse_news, cb_kwargs={'category_id': category_id})
 
             # sang trang tiếp theo của cùng category
-            next_page = response.css('a.btn-page.next-page::attr(href)').get()
-            if next_page:
-                yield response.follow(next_page, self.parse_category)
+            # next_page = response.css('a.btn-page.next-page::attr(href)').get()
+            # if next_page:
+            #     yield response.follow(next_page, self.parse_category)
 
     def parse_news(self, response, category_id):
         ID_SELECTOR = 'head meta[name=tt_article_id]::attr(content)'
@@ -51,6 +51,7 @@ class VnExpressNewsSpider(scrapy.Spider):
         LAST_MOD_SELECTOR = 'head meta[name=lastmod]::attr(content)'
         DESCRIPTION_SELECTOR = 'head meta[name=description]::attr(content)'
         CONTENT_SELECTOR = '.container article.fck_detail'
+        CONTENT_TEXT_SELECTOR = '.container article.fck_detail *::text'
         KEYWORDS_SELECTOR = 'head meta[name=keywords]::attr(content)'
 
         news_item = NewsItem()
@@ -64,6 +65,7 @@ class VnExpressNewsSpider(scrapy.Spider):
         news_item['last_mod'] = response.css(LAST_MOD_SELECTOR).get()
         news_item['description'] = response.css(DESCRIPTION_SELECTOR).get()
         news_item['content'] = response.css(CONTENT_SELECTOR).get()
+        news_item['content_text'] = " ".join(response.css(CONTENT_TEXT_SELECTOR).getall())
         news_item['keywords'] = response.css(KEYWORDS_SELECTOR).get()
 
         yield news_item
@@ -71,3 +73,5 @@ class VnExpressNewsSpider(scrapy.Spider):
         # lưu item vào db table news
         db = Database()
         db.insert_news(news_item)
+
+

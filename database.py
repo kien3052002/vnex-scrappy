@@ -10,7 +10,7 @@ class Database:
         connection = psycopg2.connect(**DB_CONFIG)
         cursor = connection.cursor()
 
-        # tạo các table nếu ko có
+        # tạo các table
         create_query_news = """
                 CREATE TABLE IF NOT EXISTS news (
                    id TEXT PRIMARY KEY,
@@ -22,6 +22,7 @@ class Database:
                    last_mod TEXT,
                    description TEXT,
                    content TEXT,
+                   content_text TEXT,
                    keywords TEXT
                 );
                 """
@@ -59,8 +60,8 @@ class Database:
         cursor = connection.cursor()
 
         insert_query = """
-                        INSERT INTO news (id, source, title, category_id, author, publish_date, last_mod, description, content, keywords)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) ON CONFLICT (id) DO UPDATE SET 
+                        INSERT INTO news (id, source, title, category_id, author, publish_date, last_mod, description, content, content_text, keywords)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) ON CONFLICT (id) DO UPDATE SET 
                         source = EXCLUDED.source,
                         title = EXCLUDED.title,
                         category_id = EXCLUDED.category_id,
@@ -69,6 +70,7 @@ class Database:
                         last_mod = EXCLUDED.last_mod,
                         description = EXCLUDED.description,
                         content = EXCLUDED.content,
+                        content_text = EXCLUDED.content_text,
                         keywords = EXCLUDED.keywords;
                         """
         data = (
@@ -81,6 +83,7 @@ class Database:
             news_item['last_mod'],
             news_item['description'],
             news_item['content'],
+            news_item['content_text'],
             news_item['keywords'],
         )
 
